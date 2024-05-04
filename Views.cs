@@ -1,3 +1,4 @@
+// Estrutura base dos métodos do Views
 using System;
 using System.Collections.Generic;
 

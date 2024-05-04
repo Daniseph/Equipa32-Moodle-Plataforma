@@ -1,3 +1,4 @@
+// Estrutura base dos métodos do Model 
 using System;
 using System.Collections.Generic;
 using System.Numerics;
