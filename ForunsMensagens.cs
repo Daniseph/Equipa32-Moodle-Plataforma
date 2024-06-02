@@ -1,15 +1,14 @@
 // Base da implementação do formulário para Fóruns e Mensagens
 using System;
-using System.Windows.Forms;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PlatGestMoo
 {
-    public partial class ForunsMensagensForm : Form
+    public partial class ForunsMensagens
     {
         private Controller controller;
 
-        public ForunsMensagensForm(Controller ctrl)
+        public ForunsMensagens(Controller ctrl)
         {
             InitializeComponent();
             controller = ctrl;
