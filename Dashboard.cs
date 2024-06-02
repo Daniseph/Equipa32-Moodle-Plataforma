@@ -1,14 +1,14 @@
 // Base da implementação do formulário de Dashboard, será necessário alterar o design e a lógica
 using System;
-using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace PlatGestMoo
 {
-    public partial class DashboardForm : Form
+    public partial class Dashboard
     {
         private Controller controller;
 
-        public DashboardForm(Controller ctrl)
+        public Dashboard(Controller ctrl)
         {
             InitializeComponent();
             controller = ctrl;
