@@ -1,6 +1,8 @@
 // Estrutura base dos métodos do controlador 
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace PlatGestMoo
 {
@@ -14,11 +16,12 @@ namespace PlatGestMoo
         public Controller()
         {
             sair = false;
-            model = new Model(view);
-            view = new View(model);
+            model = new Model(); // Primeiro cria o Model
+            view = new View(model); // Depois cria a View
             modelLog = new ModelLog();
             model.ModelLog = modelLog;
 
+            // Registra os eventos da View
             view.UtilizadorClicouEmLogin += Login;
             view.UtilizadorClicouEmSair += UtilizadorClicouEmSair;
             view.UtilizadorSelecionouDisciplina += AtualizarDetalhesDisciplina;
@@ -36,16 +39,35 @@ namespace PlatGestMoo
             model.DashboardPersonalizadoAtualizado += view.AtualizarDashboard;
         }
 
-        private void Login(object sender, EventArgs e)
+        private async Task Login(object sender, EventArgs e)
         {
-            string nomeUsuario = view.ObterNomeUsuario();
-            string senha = view.ObterSenha();
-            bool autenticado = model.Login(nomeUsuario, senha);
-            if (autenticado)
+            try
             {
+                string nomeUsuario = view.ObterNomeUsuario();
+                string senha = view.ObterSenha();
+                bool autenticado = await model.LoginAsync(nomeUsuario, senha);
+                if (autenticado)
+                {
+                    // login bem sucedido
+                    view.AtivarViewDashboard(); 
+                    view.AtualizarListaDeDisciplinas();
+                    view.AtualizarProximasAvaliacoes(); 
+                }
+                else
+                {
+                    // login mal sucedido
+                    view.ExibirMensagem("Credenciais inválidas. Por favor, tente novamente.");
+                }
             }
-            else
+            catch (ExceptionFormaDesconhecida ex)
             {
+                // Mensagem de erro na interface gráfica
+                view.ExibirMensagemErro("Erro ao efetuar login: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Erro genérica na interface gráfica
+                view.ExibirMensagemErro("Erro ao efetuar login: " + ex.Message);
             }
         }
 
@@ -57,41 +79,89 @@ namespace PlatGestMoo
 
         private void AtualizarDetalhesDisciplina(object sender, EventArgs e)
         {
+            
         }
 
         private void PrecisoDeFormas(object sender, EventArgs e)
         {
+            
         }
 
         private void PrecisoDeLog(object sender, EventArgs e)
         {
+            
         }
 
-        private void RealizarBuscaAvancada(object sender, EventArgs e)
+        private async Task RealizarBuscaAvancada(object sender, EventArgs e)
         {
-            string termoBusca = view.ObterTermoBusca();
-            model.BuscaAvancada(termoBusca);
+            try
+            {
+                string termoBusca = view.ObterTermoBusca();
+                await model.BuscaAvancadaAsync(termoBusca);
+            }
+            catch (Exception ex)
+            {
+                view.ExibirMensagemErro("Erro ao realizar busca avançada: " + ex.Message);
+            }
         }
 
-        private void SalvarConfiguracoesPerfil(object sender, EventArgs e)
+        private async Task SalvarConfiguracoesPerfil(object sender, EventArgs e)
         {
-            ConfiguracoesPerfil configuracoes = view.ObterConfiguracoesPerfil();
-            model.SalvarConfiguracoesPerfil(configuracoes);
+            try
+            {
+                ConfiguracoesPerfil configuracoes = view.ObterConfiguracoesPerfil();
+                await model.SalvarConfiguracoesPerfilAsync(configuracoes);
+            }
+            catch (Exception ex)
+            {
+                view.ExibirMensagemErro("Erro ao salvar configurações do perfil: " + ex.Message);
+            }
         }
 
-        public void IniciarPrograma()
+        public async Task IniciarPrograma()
         {
             do
             {
                 try
                 {
-                    view.AtivarInterface();
+                    await view.AtivarInterfaceAsync();
                 }
-                catch (ExceptionFormaDesconhecida ex)
+                catch (Exception ex)
                 {
-                    view.ExibirMensagemErro(ex.Message);
+                    view.ExibirMensagemErro("Erro ao iniciar o programa: " + ex.Message);
                 }
             } while (!sair);
         }
+
+        public async Task FetchDisciplinasAsync()
+        {
+            // Método para buscar disciplinas da fonte de dados e carregar no Model
+            string jsonDisciplinas = await GetJsonDisciplinasAsync();
+            var disciplinas = JsonConvert.DeserializeObject<List<IDisciplina>>(jsonDisciplinas);
+            model.CarregaDisciplinas(disciplinas);
+        }
+
+        public async Task FetchAvaliacoesAsync()
+        {
+            // Método para buscar avaliações da fonte de dados e carregar no Model
+            string jsonAvaliacoes = await GetJsonAvaliacoesAsync();
+            var avaliacoes = JsonConvert.DeserializeObject<List<IAvaliacao>>(jsonAvaliacoes);
+            model.CarregaAvaliacoes(avaliacoes);
+        }
+
+        private async Task<string> GetJsonDisciplinasAsync()
+        {
+            // Simula a obtenção de dados de disciplinas de uma fonte externa
+            await Task.Delay(1000); // Simula atraso de rede
+            return "[{\"Nome\": \"Disciplina 1\", \"Codigo\": \"D001\", \"Creditos\": 4}, {\"Nome\": \"Disciplina 2\", \"Codigo\": \"D002\", \"Creditos\": 3}]";
+        }
+
+        private async Task<string> GetJsonAvaliacoesAsync()
+        {
+            // Simula a obtenção de dados de avaliações de uma fonte externa
+            await Task.Delay(1000); // Simula atraso de rede
+            return "[{\"DisciplinaCodigo\": \"D001\", \"Tipo\": \"Prova\", \"Data\": \"2024-06-10\", \"Nota\": 8.5}, {\"DisciplinaCodigo\": \"D002\", \"Tipo\": \"Trabalho\", \"Data\": \"2024-06-15\", \"Nota\": 9.0}]";
+        }
     }
 }
+
