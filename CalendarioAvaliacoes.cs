@@ -1,18 +1,18 @@
 // Base da implementação do formulário para o Calendário de Avaliações 
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
 
 namespace PlatGestMoo
 {
-    public partial class CalendarioAvaliacoesForm : Form
+    public partial class CalendarioAvaliacoes
     {
         private Controller controller;
 
-        public CalendarioAvaliacoesForm(Controller ctrl)
+        public CalendarioAvaliacoes(Controller ctrl)
         {
             InitializeComponent();
             controller = ctrl;
+            controller.CalendarioAvaliacoesAtualizado += AtualizarCalendario;
         }
 
         public void AtualizarCalendario(List<Avaliacao> avaliacoes)
