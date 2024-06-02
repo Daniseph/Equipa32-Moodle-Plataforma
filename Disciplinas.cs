@@ -1,11 +1,10 @@
 // Base da implementação do formulário para visualizar as disciplinas disponíveis
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
 
 namespace PlatGestMoo
 {
-    public partial class DisciplinasForm : Form
+    public partial class Disciplinas 
     {
         private Controller controller;
 
@@ -40,3 +39,4 @@ namespace PlatGestMoo
         }
     }
 }
+
