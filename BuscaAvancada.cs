@@ -1,18 +1,17 @@
-// Base da implementação do formulário para a Busca Avançada
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
 
-namespace SeuNamespace
+namespace PlatGestMoo
 {
-    public partial class BuscaAvancadaForm : Form
+    public partial class BuscaAvancada
     {
         private Controller controller;
 
-        public BuscaAvancadaForm(Controller ctrl)
+        public BuscaAvancada(Controller ctrl)
         {
             InitializeComponent();
             controller = ctrl;
+            controller.ResultadosDaBusca += ExibirResultados;
         }
 
         private void btnBuscar_Click(object sender, EventArgs e)
@@ -21,6 +20,7 @@ namespace SeuNamespace
 
             controller.Buscar(termoBusca);
         }
+
         public void ExibirResultados(List<ResultadoBusca> resultados)
         {
             lstResultados.Items.Clear();
