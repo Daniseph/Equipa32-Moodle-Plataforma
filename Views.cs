@@ -1,70 +1,107 @@
 // Estrutura base dos métodos do Views
 using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PlatGestMoo
 {
     public class View
     {
         private Model model;
-        private FormMain janela;
-        private ViewLog viewlog;
-
-        private List<Disciplina> listaDisciplinas;
-        private List<Avaliacao> listaProximasAvaliacoes;
 
         public event EventHandler UtilizadorClicouEmLogin;
-        public event EventHandler UtilizadorSelecionouDisciplina;
         public event EventHandler UtilizadorClicouEmSair;
+        public event EventHandler UtilizadorSelecionouDisciplina;
+        public event EventHandler PrecisoDeFormas;
+        public event EventHandler PrecisoDeLog;
+        public event EventHandler UtilizadorClicouEmBuscar;
+        public event EventHandler UtilizadorClicouEmSalvarConfiguracoes;
 
-        internal View(Model m)
+        public View(Model model)
         {
-            model = m;
-            viewlog = new ViewLog(janela);
+            this.model = model;
+        }
+	//Base da logica para ativar a interface gráfica e interação com o usuário
+        public async Task AtivarInterfaceAsync()
+        {
+            while (true)
+            {
+              
+                await Task.Delay(1000); // Aguarda 1 segundo 
+                UtilizadorClicouEmLogin?.Invoke(this, EventArgs.Empty);
+            }
         }
 
-        public void Encerrar()
+        public string ObterNomeUsuario()
         {
-            janela.Encerrar();
+           
+            return "usuário"; // Retorna o nome de usuário inserido pelo usuário
         }
 
-        public void AtivarInterface()
+        public string ObterSenha()
         {
-            janela = new FormMain();
-            janela.View = this;
-            janela.ShowDialog();
+         
+            return "senha"; // Retorna a senha inserida pelo usuário
         }
 
-        public void AtivarViewLog()
+        public string ObterTermoBusca()
         {
-            viewlog.AtivarViewLog();
+           
+            return "termo de busca"; // Retorna o termo de busca inserido pelo usuário
+        }
+
+        public ConfiguracoesPerfil ObterConfiguracoesPerfil()
+        {
+           
+            return new ConfiguracoesPerfil(); // Retorna as configurações de perfil inseridas pelo usuário
+        }
+
+        public void AtivarViewDashboard()
+        {
+         
         }
 
         public void AtualizarListaDeDisciplinas()
         {
-            listaDisciplinas = model.ObterListaDisciplinas();
-            janela.RenderizarListaDisciplinas(listaDisciplinas);
+          
         }
 
         public void AtualizarProximasAvaliacoes()
         {
-            listaProximasAvaliacoes = model.ObterProximasAvaliacoes();
-            janela.RenderizarProximasAvaliacoes(listaProximasAvaliacoes);
+      
         }
 
-        public void CliqueEmLogin(object sender, EventArgs e)
+        public void ExibirMensagem(string mensagem)
         {
-            UtilizadorClicouEmLogin?.Invoke(sender, e);
+            // Exibe uma mensagem na interface gráfica
+            Console.WriteLine(mensagem);
         }
 
-        public void SelecionarDisciplina(object sender, EventArgs e)
+        public void ExibirMensagemErro(string mensagemErro)
         {
-            UtilizadorSelecionouDisciplina?.Invoke(sender, e);
+            // Exibe uma mensagem de erro na interface gráfica
+            Console.WriteLine("Erro: " + mensagemErro);
         }
 
-        public void CliqueEmSair(object sender, EventArgs e)
+        public void Encerrar()
         {
-            UtilizadorClicouEmSair?.Invoke(sender, e);
+     
         }
+
+       
     }
+
+	private async Task OnLoginButtonClick(object sender, EventArgs e)
+{
+    try
+    {
+        // Envia o pedido de login ao Controller
+        await controller.Login(txtUsername.Text, txtPassword.Text);
+    }
+    catch (InvalidCredentialsException ex)
+    {
+        // Mostra uma mensagem de erro para o usuário
+        ShowErrorMessage(ex.Message);
+     }
+  }
+
 }
